@@ -2,13 +2,17 @@
 
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { Menu, X } from "lucide-react"
+import { CircleAlert, Loader, Loader2, Menu, X } from "lucide-react"
+import { useProductCategories } from "@/app/services/Queries"
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false)
   const sidebarRef = useRef<HTMLDivElement>(null)
 
-  // Close sidebar on outside click
+  const getProducts = useProductCategories()
+  
+ 
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
@@ -22,10 +26,11 @@ export default function Sidebar() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [isOpen])
 
+ 
   return (
     <>
       <div
-        className={`fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-opacity-30 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300 p-2 ${
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setIsOpen(false)}
@@ -33,44 +38,62 @@ export default function Sidebar() {
 
       <button
         onClick={() => setIsOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 text-white shadow-lg hover:scale-105 transition-transform"
+        className="md:hidden fixed  top-4 left-4 z-50 p-2 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 text-white shadow-lg hover:scale-105 transition-transform"
+        style={{
+          left:isOpen ? "18rem" : "1rem",
+          transition: "left 0.4s ease-in-out", 
+        }}
       >
-        <Menu size={24} />
+        {isOpen ? <X className="sm:hidden"/> : <Menu className="sm:hidden" />}
       </button>
 
       <aside
         ref={sidebarRef}
         className={`
-          fixed top-0 left-0 h-screen w-72 bg-gradient-to-b from-gray-800 via-gray-900 to-gray-950 text-white shadow-2xl z-50
+          overflow-y-scroll scrollbar-hidden
+          fixed top-0 left-0 w-72 bg-gradient-to-b shadow-2xl z-50
           transform ${isOpen ? "translate-x-0" : "-translate-x-full"}
           transition-transform duration-500 ease-in-out
-          md:translate-x-0 md:static md:shadow-none rounded-r-2xl
+          md:translate-x-0 md:static md:shadow-none rounded-r-2xl bg-blue-300
         `}
       >
-        <div className="flex justify-between items-center p-6 text-2xl font-bold border-b border-gray-700">
-          <span>Products.io</span>
-          <button
-            className="md:hidden p-1 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors"
-            onClick={() => setIsOpen(false)}
-          >
-            <X size={24} />
-          </button>
-        </div>
+        
+
+         {!isOpen && getProducts.isPending && (
+          <div className="flex flex-row justify-center items-center min-h-screen">
+            <Loader size={24} className="animate-spin"/>
+          </div>
+        )}
+
+        {!isOpen && getProducts.isError && (
+          <div className="flex flex-col justify-center items-center">
+            <CircleAlert className=" text-red-500" />
+            <p className=" text-red-500">Failed to Load Items</p>
+          </div>
+        )}
+
+        {isOpen && getProducts.isPending && (
+          <div className="flex flex-row justify-center items-cente">
+            <Loader className="animate-spin"/>
+          </div>
+        )}
+
+        {isOpen && getProducts.isError && (
+          <div className="flex flex-col justify-center items-center">
+            <CircleAlert className=" text-red-500" />
+            <p className=" text-red-500">Failed to Load Items</p>
+          </div>
+        )}
 
         <nav className="p-6 flex flex-col gap-3 text-lg">
-          {[
-            { href: "/", label: "Dashboard" },
-            { href: "/profile/1", label: "Profile" },
-            { href: "/settings", label: "Settings" },
-            { href: "/logout", label: "Logout" },
-          ].map((link) => (
+          {getProducts?.data?.map((link) => (
             <Link
-              key={link.href}
-              href={link.href}
-              className="flex items-center gap-2 p-3 rounded-lg hover:bg-gray-700 transition-colors"
+              key={link.slug}
+              href={link.slug}
+              className="flex items-center gap-2 p-3 rounded-lg hover:bg-gray-200 transition-colors"
               onClick={() => setIsOpen(false)}
             >
-              {link.label}
+              {link.name}
             </Link>
           ))}
         </nav>
