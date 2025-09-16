@@ -50,7 +50,7 @@ export default function Sidebar() {
       <aside
         ref={sidebarRef}
         className={`
-          overflow-y-scroll scrollbar-hidden
+          overflow-y-scroll scrollbar-hidden min-h-screen
           fixed top-0 left-0 w-72 bg-gradient-to-b shadow-2xl z-50
           transform ${isOpen ? "translate-x-0" : "-translate-x-full"}
           transition-transform duration-500 ease-in-out
@@ -86,10 +86,18 @@ export default function Sidebar() {
         )}
 
         <nav className="p-6 flex flex-col gap-3 text-lg">
+            <Link
+              key=""
+              href="/dashboard"
+              className="flex items-center gap-2 p-3 rounded-lg hover:bg-gray-200 transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              All Products
+            </Link>
           {getProducts?.data?.map((link) => (
             <Link
               key={link.slug}
-              href={link.slug}
+              href={`/products/category/${link.slug}`}
               className="flex items-center gap-2 p-3 rounded-lg hover:bg-gray-200 transition-colors"
               onClick={() => setIsOpen(false)}
             >

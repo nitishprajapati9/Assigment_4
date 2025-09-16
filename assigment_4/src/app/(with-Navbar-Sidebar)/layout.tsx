@@ -6,15 +6,17 @@ import Sidebar from "./_components/Sidebar";
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <ProtectedRoute>
-      <div className="min-h-screen flex flex-col">
-        <div className="hidden md:block">
+      <div className="flex flex-col h-screen">
+        <div className="sticky top-0 z-50">
           <Navbar />
         </div>
-
-        <div className="flex flex-1">
-          <Sidebar/>
-
-          <main className="flex-1 p-6 m-6">{children}</main>
+        
+        <div className="flex flex-1 overflow-hidden">
+          <Sidebar />
+          
+          <main className="flex-1 h-full overflow-auto">
+            {children}
+          </main>
         </div>
       </div>
     </ProtectedRoute>

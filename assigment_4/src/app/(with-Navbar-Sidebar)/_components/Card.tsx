@@ -1,82 +1,196 @@
 import { Products } from "@/app/types/PaginatedProduct";
-import { IndianRupee, ReceiptIndianRupeeIcon, Star } from "lucide-react";
+import { IndianRupee, Star, Heart, ShoppingCart, Eye } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Card({ productInfo }: { productInfo: Products }) {
+  const router = useRouter();
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  
   const discountedPrice = productInfo.discountPercentage
     ? (productInfo.price - (productInfo.price * productInfo.discountPercentage) / 100).toFixed(2)
     : productInfo.price.toFixed(2);
 
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsFavorite(!isFavorite);
+  };
+
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Add quick view functionality here
+    console.log("Quick view:", productInfo.id);
+  };
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Add to cart functionality here
+    console.log("Add to cart:", productInfo.id);
+  };
+
   return (
-    <div className="w-full border border-gray-300 rounded-2xl shadow-lg bg-white hover:shadow-xl transition-shadow duration-300 overflow-hidden cursor-pointer">
-      {/* Thumbnail */}
-      <div className="relative flex justify-center items-center bg-gray-100 h-64">
+    <div 
+      onClick={() => router.push(`/products/${productInfo.id}`)} 
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="group relative w-full bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer transform hover:-translate-y-2 border border-gray-100"
+    >
+      {/* Thumbnail Container */}
+      <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 h-64 overflow-hidden">
         <img
-          className="h-full max-h-60 object-contain mx-auto"
+          className="h-full w-full object-contain mx-auto transition-transform duration-500 group-hover:scale-110"
           src={productInfo.thumbnail}
           alt={productInfo.title}
         />
+        
+        {/* Discount Badge */}
         {productInfo.discountPercentage > 0 && (
-          <span className="absolute top-3 left-3 bg-red-500 text-white text-sm font-semibold px-3 py-1 rounded-lg shadow-md">
-            -{productInfo.discountPercentage}%
-          </span>
+          <div className="absolute top-4 left-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-sm font-bold px-3 py-2 rounded-full shadow-lg transform -rotate-3 hover:rotate-0 transition-transform duration-300">
+            -{productInfo.discountPercentage}% OFF
+          </div>
         )}
+        
+        {/* Action Buttons Overlay */}
+        <div className={`absolute top-4 right-4 flex flex-col gap-2 transition-all duration-300 ${
+          isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
+        }`}>
+          <button
+            onClick={handleFavoriteClick}
+            className={`p-2.5 rounded-full shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${
+              isFavorite 
+                ? 'bg-red-500 text-white' 
+                : 'bg-white/80 text-gray-600 hover:bg-red-50'
+            }`}
+          >
+            <Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} />
+          </button>
+          
+          <button
+            onClick={handleQuickView}
+            className="p-2.5 bg-white/80 text-gray-600 rounded-full shadow-lg backdrop-blur-sm hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 hover:scale-110"
+          >
+            <Eye size={18} />
+          </button>
+        </div>
+
+        {/* Stock Status */}
+        <div className="absolute bottom-4 left-4">
+          <span className="px-3 py-1 bg-green-500 text-white text-xs font-semibold rounded-full shadow-md">
+            In Stock
+          </span>
+        </div>
+
+        {/* Quick Add to Cart Button */}
+        <div className={`absolute bottom-4 right-4 transition-all duration-300 ${
+          isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+        }`}>
+          <button
+            onClick={handleAddToCart}
+            className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+          >
+            <ShoppingCart size={18} />
+          </button>
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="p-6 flex flex-col gap-3">
+      {/* Content Section */}
+      <div className="p-6 space-y-4">
+        {/* Category */}
+        <div className="flex items-center justify-between">
+          <span className="px-3 py-1 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 text-xs font-semibold rounded-full uppercase tracking-wide">
+            {productInfo.category}
+          </span>
+          
+          {/* Rating */}
+          <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
+            <Star size={14} className="fill-yellow-400 text-yellow-400" />
+            <span className="text-sm font-semibold text-gray-800">
+              {productInfo.rating.toFixed(1)}
+            </span>
+          </div>
+        </div>
+
         {/* Title */}
-        <h5 className="text-xl font-bold text-gray-900 line-clamp-1">
+        <h5 className="text-xl font-bold text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors duration-200">
           {productInfo.title}
         </h5>
 
         {/* Description */}
-        <p className="text-base text-gray-700 line-clamp-3 leading-relaxed">
+        <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
           {productInfo.description}
         </p>
 
-        {/* Category */}
-        <span className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-          {productInfo.category}
-        </span>
-
         {/* Tags */}
-        <div className="flex flex-wrap gap-2 mt-3">
-          {productInfo.tags.map((tag) => (
+        <div className="flex flex-wrap gap-1.5">
+          {productInfo.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full shadow-sm"
+              className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 text-xs font-medium px-2.5 py-1 rounded-full hover:from-blue-100 hover:to-purple-100 hover:text-blue-700 transition-all duration-200"
             >
               {tag}
             </span>
           ))}
-        </div>
-
-        {/* Price */}
-        <div className="mt-4">
-          {productInfo.discountPercentage > 0 ? (
-            <div className="flex items-center gap-3">
-              <span className="text-2xl font-bold text-gray-900 flex flex-row gap-1">
-                <IndianRupee />{discountedPrice}
-              </span>
-              <span className="text-lg line-through text-gray-500 flex flex-row">
-                <IndianRupee /> {productInfo.price.toFixed(2)}
-              </span>
-            </div>
-          ) : (
-            <span className="text-2xl font-bold text-gray-900 flex flex-row gap-1">
-              <IndianRupee />{productInfo.price.toFixed(2)}
+          {productInfo.tags.length > 3 && (
+            <span className="text-xs text-gray-500 font-medium px-2 py-1">
+              +{productInfo.tags.length - 3} more
             </span>
           )}
         </div>
 
-        {/* Rating */}
-        <div className="flex items-center gap-2 mt-3">
-          <span className="text-yellow-500 text-lg"><Star className="fill-amber-300" /></span>
-          <span className="text-base font-semibold text-gray-800">
-            {productInfo.rating.toFixed(1)} / 5
-          </span>
+        {/* Price Section */}
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-2xl border border-green-100">
+          {productInfo.discountPercentage > 0 ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center text-2xl font-bold text-green-600">
+                  <IndianRupee size={20} />
+                  <span>{discountedPrice}</span>
+                </div>
+                <div className="flex items-center text-lg line-through text-gray-500">
+                  <IndianRupee size={16} />
+                  <span>{productInfo.price.toFixed(2)}</span>
+                </div>
+              </div>
+              <p className="text-xs text-green-700 font-medium">
+                You save ₹{(productInfo.price - parseFloat(discountedPrice)).toFixed(2)}!
+              </p>
+            </div>
+          ) : (
+            <div className="flex items-center text-2xl font-bold text-gray-900">
+              <IndianRupee size={20} />
+              <span>{productInfo.price.toFixed(2)}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Action Bar */}
+        <div className="pt-2 border-t border-gray-100">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={handleAddToCart}
+              className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-md mr-3 flex items-center justify-center gap-2"
+            >
+              <ShoppingCart size={16} />
+              <span className="hidden sm:inline">Add to Cart</span>
+              <span className="sm:hidden">Add</span>
+            </button>
+            
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/products/${productInfo.id}`);
+              }}
+              className="px-4 py-3 border-2 border-blue-600 text-blue-600 font-semibold rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-200 transform hover:scale-105"
+            >
+              <Eye size={16} />
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Hover Glow Effect */}
+      <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
     </div>
   );
 }

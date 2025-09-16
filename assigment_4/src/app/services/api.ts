@@ -3,7 +3,8 @@ import axiosInstance from "../Axios/axiosInstance";
 import {  LOGIN_URL } from "../constants/Endpoints";
 import axios from "axios";
 import { Categories } from "../types/Products";
-import { PaginatedProduct } from "../types/PaginatedProduct";
+import { PaginatedProduct, Products } from "../types/PaginatedProduct";
+import { ProductType } from "../types/ProductType";
 
 export async function LoginService(data:LoginFormInputs){
     return (await axiosInstance.post(LOGIN_URL,data)).data
@@ -50,6 +51,28 @@ export async function getDashboardProductWithPaginationService(page:number = 0){
   }
   catch(error){
     console.log("Error Fetching the Dashboard Categories Produce",error)
+    throw error
+  }
+}
+
+export async function getSingleProduct(id:string){
+  try{
+    const response = (await axios.get<ProductType>(`https://dummyjson.com/products/${id}`)).data
+    return response
+  }
+  catch(error){
+    console.log("Error Fetching the Single Product",error)
+    throw error
+  }
+}
+
+export async function getProductBasedOnCategory(slug:string,page:number){
+  try{
+    const response = (await axios.get<PaginatedProduct>(`https://dummyjson.com/products/category/${slug}?skip=${page*10}&limit=9`)).data
+    return response
+  }
+  catch(error){
+    console.log("Error Fetching the Catgeory Based Product",error)
     throw error
   }
 }

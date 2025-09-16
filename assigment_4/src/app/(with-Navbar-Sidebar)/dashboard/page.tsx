@@ -1,7 +1,6 @@
 "use client";
 
 import { useDashboardPaginationProduct } from "@/app/services/Queries";
-import { useAppSelector } from "../../_store/hooks";
 import { useState } from "react";
 import Card from "../_components/Card";
 import { CircleAlert, Loader } from "lucide-react";
