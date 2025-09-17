@@ -12,12 +12,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Changing Directory
-        uses: cd assigment_4
-
       - name: Install dependencies
         run:  npm install
+        working-directory: assigment_4
 
       - name: Run Next.js linter
         run: npm run lint
+        working-directory: assigment_4
           
