@@ -15,10 +15,10 @@ export function useProductCategories(){
     })
 }
 
-export function useDashboardPaginationProduct(page:number = 0){
+export function useDashboardPaginationProduct(page:number = 0,searchText:string){
     return useQuery({
-        queryKey:["Dashboard Products",page],
-        queryFn:() => getDashboardProductWithPaginationService(page),
+        queryKey:["Dashboard Products",page,searchText],
+        queryFn:() => getDashboardProductWithPaginationService(page,searchText),
         placeholderData:keepPreviousData
     })
 }
@@ -30,10 +30,10 @@ export function useProductType(id:string){
     })
 }
 
-export function useCategoryType(slug:string,page:number = 0){
+export function useCategoryType(slug:string,page:number = 0,searchText:string){
     return useQuery({
-        queryKey:["Catgeory Type",slug],
-        queryFn:() => getProductBasedOnCategory(slug,page),
+        queryKey:["Catgeory Type",slug,page,searchText],
+        queryFn:() => getProductBasedOnCategory(slug,page,searchText),
         placeholderData:keepPreviousData
     })
 }

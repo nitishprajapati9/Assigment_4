@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import Navbar from "./(with-Navbar-Sidebar)/_components/Navbar";
 import { usePathname } from "next/navigation";
 import { NavbarProvider } from "./Providers/NavbarProvider";
+import { SearchProvider } from "./Providers/SearchProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,13 +33,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased w-full min-h-screen`}
       >
-       <TanstackQueryClientProvider>
-        <ReducerProvider>
-          
-          {children}
-          <Toaster />
-        </ReducerProvider>
-       </TanstackQueryClientProvider>
+        <TanstackQueryClientProvider>
+          <ReducerProvider>
+            <SearchProvider>{children}</SearchProvider>
+            
+            <Toaster />
+          </ReducerProvider>
+        </TanstackQueryClientProvider>
       </body>
     </html>
   );

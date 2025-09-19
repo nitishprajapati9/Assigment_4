@@ -1,6 +1,7 @@
 "use client"
 
 import Card from "@/app/(with-Navbar-Sidebar)/_components/Card";
+import { useSearch } from "@/app/Providers/SearchProvider";
 import { useCategoryType } from "@/app/services/Queries";
 import { CircleAlert, Loader } from "lucide-react";
 import React,{ useState } from "react";
@@ -12,6 +13,8 @@ export default function CatgoryPage({
 }) {
   const { slug } = React.use(params);
   const [page, setPage] = useState(0);
+   const { searchText } = useSearch();
+  console.log("Category Loading", searchText);
   const {
     data,
     isPending,
@@ -20,7 +23,7 @@ export default function CatgoryPage({
     error,
     isFetching,
     refetch,
-  } = useCategoryType(slug,page);
+  } = useCategoryType(slug,page,searchText);
 
   if(isFetching){
           return (

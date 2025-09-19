@@ -1,15 +1,22 @@
+import { addToCart } from "@/app/_store/cartSlice";
+import { useAppDispatch } from "@/app/_store/hooks";
+import { useProductType } from "@/app/services/Queries";
 import { Products } from "@/app/types/PaginatedProduct";
 import { IndianRupee, Star, Heart, ShoppingCart, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function Card({ productInfo }: { productInfo: Products }) {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-  
+  const dispatch = useAppDispatch();
   const discountedPrice = productInfo.discountPercentage
-    ? (productInfo.price - (productInfo.price * productInfo.discountPercentage) / 100).toFixed(2)
+    ? (
+        productInfo.price -
+        (productInfo.price * productInfo.discountPercentage) / 100
+      ).toFixed(2)
     : productInfo.price.toFixed(2);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
@@ -26,12 +33,35 @@ export default function Card({ productInfo }: { productInfo: Products }) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     // Add to cart functionality here
-    console.log("Add to cart:", productInfo.id);
+    const addPromise = new Promise<void>((resolve, reject) => {
+      try {
+        dispatch(
+          addToCart({
+            productId: productInfo.id,
+            productName: productInfo.title,
+            productdescription: productInfo.description,
+            quantity: 1,
+            productPrice: productInfo.price,
+            discountPercentage: productInfo.discountPercentage,
+            image:productInfo.thumbnail
+          })
+        );
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+
+    toast.promise(addPromise, {
+      loading: "Adding to Cart..",
+      success: "Item added to Cart",
+      error: "Failed to add Item",
+    });
   };
 
   return (
-    <div 
-      onClick={() => router.push(`/products/${productInfo.id}`)} 
+    <div
+      onClick={() => router.push(`/products/${productInfo.id}`)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="group relative w-full bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer transform hover:-translate-y-2 border border-gray-100"
@@ -43,29 +73,31 @@ export default function Card({ productInfo }: { productInfo: Products }) {
           src={productInfo.thumbnail}
           alt={productInfo.title}
         />
-        
+
         {/* Discount Badge */}
         {productInfo.discountPercentage > 0 && (
           <div className="absolute top-4 left-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-sm font-bold px-3 py-2 rounded-full shadow-lg transform -rotate-3 hover:rotate-0 transition-transform duration-300">
             -{productInfo.discountPercentage}% OFF
           </div>
         )}
-        
+
         {/* Action Buttons Overlay */}
-        <div className={`absolute top-4 right-4 flex flex-col gap-2 transition-all duration-300 ${
-          isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
-        }`}>
+        <div
+          className={`absolute top-4 right-4 flex flex-col gap-2 transition-all duration-300 ${
+            isHovered ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+          }`}
+        >
           <button
             onClick={handleFavoriteClick}
             className={`p-2.5 rounded-full shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${
-              isFavorite 
-                ? 'bg-red-500 text-white' 
-                : 'bg-white/80 text-gray-600 hover:bg-red-50'
+              isFavorite
+                ? "bg-red-500 text-white"
+                : "bg-white/80 text-gray-600 hover:bg-red-50"
             }`}
           >
-            <Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} />
+            <Heart size={18} fill={isFavorite ? "currentColor" : "none"} />
           </button>
-          
+
           <button
             onClick={handleQuickView}
             className="p-2.5 bg-white/80 text-gray-600 rounded-full shadow-lg backdrop-blur-sm hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 hover:scale-110"
@@ -82,9 +114,11 @@ export default function Card({ productInfo }: { productInfo: Products }) {
         </div>
 
         {/* Quick Add to Cart Button */}
-        <div className={`absolute bottom-4 right-4 transition-all duration-300 ${
-          isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-        }`}>
+        <div
+          className={`absolute bottom-4 right-4 transition-all duration-300 ${
+            isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}
+        >
           <button
             onClick={handleAddToCart}
             className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110"
@@ -101,7 +135,7 @@ export default function Card({ productInfo }: { productInfo: Products }) {
           <span className="px-3 py-1 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 text-xs font-semibold rounded-full uppercase tracking-wide">
             {productInfo.category}
           </span>
-          
+
           {/* Rating */}
           <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
             <Star size={14} className="fill-yellow-400 text-yellow-400" />
@@ -153,7 +187,8 @@ export default function Card({ productInfo }: { productInfo: Products }) {
                 </div>
               </div>
               <p className="text-xs text-green-700 font-medium">
-                You save ₹{(productInfo.price - parseFloat(discountedPrice)).toFixed(2)}!
+                You save ₹
+                {(productInfo.price - parseFloat(discountedPrice)).toFixed(2)}!
               </p>
             </div>
           ) : (
@@ -175,7 +210,7 @@ export default function Card({ productInfo }: { productInfo: Products }) {
               <span className="hidden sm:inline">Add to Cart</span>
               <span className="sm:hidden">Add</span>
             </button>
-            
+
             <button
               onClick={(e) => {
                 e.stopPropagation();
