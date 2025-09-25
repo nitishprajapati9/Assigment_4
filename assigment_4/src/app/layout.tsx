@@ -36,7 +36,6 @@ export default function RootLayout({
         <TanstackQueryClientProvider>
           <ReducerProvider>
             <SearchProvider>{children}</SearchProvider>
-            
             <Toaster />
           </ReducerProvider>
         </TanstackQueryClientProvider>

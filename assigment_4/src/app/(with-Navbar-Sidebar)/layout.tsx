@@ -11,9 +11,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [searchText, setSearchText] = useState("");
   const pathName = usePathname();
   const searchEnabledRegex = /^\/products(\/category\/[^\/]+)?\/?$/;
-
-  const isSearchBarAllowed = searchEnabledRegex.test(pathName);
-
+  const dashboardRegex = /^\/dashboard\/?$/;
+  const isSearchBarAllowed = searchEnabledRegex.test(pathName) || dashboardRegex.test(pathName);
   return (
     <ProtectedRoute>
       <div className="flex flex-col h-screen">

@@ -7,8 +7,9 @@ import { CircleAlert, Loader } from "lucide-react";
 import { useSearch } from "@/app/Providers/SearchProvider";
 
 export default function DashboardPage() {
-  const { searchText } = useSearch();
+  const { searchText,isSorted } = useSearch();
   console.log("Dashboard Loading", searchText);
+  console.log("isSorted",isSorted)
   const [page, setPage] = useState(0);
   const {
     data,
@@ -18,7 +19,7 @@ export default function DashboardPage() {
     error,
     isFetching,
     refetch,
-  } = useDashboardPaginationProduct(page,searchText);
+  } = useDashboardPaginationProduct(page,searchText,isSorted);
 
   if (isFetching) {
     return (

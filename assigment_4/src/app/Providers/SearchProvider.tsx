@@ -5,15 +5,21 @@ import { createContext, useContext, useState, ReactNode } from "react";
 type SearchContextType = {
   searchText: string;
   setSearchText: (val: string) => void;
+  isSorted: boolean;
+  setSortedIcon: (val: boolean) => void;
 };
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
 export function SearchProvider({ children }: { children: ReactNode }) {
   const [searchText, setSearchText] = useState("");
-  console.log("Search Provider",searchText)
+  const [isSorted, setSortedIcon] = useState(false);
+  console.log("Search Provider", searchText);
+
   return (
-    <SearchContext.Provider value={{ searchText, setSearchText }}>
+    <SearchContext.Provider
+      value={{ searchText, setSearchText, isSorted, setSortedIcon }}
+    >
       {children}
     </SearchContext.Provider>
   );

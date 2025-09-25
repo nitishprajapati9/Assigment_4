@@ -128,7 +128,6 @@ export default function CartPage() {
           ))}
         </div>
 
-        {/* Total & Actions */}
         <div className="mt-8 bg-white rounded-xl shadow-lg p-6 flex justify-between items-center">
           <div>
             <p className="text-lg font-medium">

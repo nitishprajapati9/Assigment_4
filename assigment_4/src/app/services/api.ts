@@ -36,7 +36,7 @@ export async function getProductCategoriesService() {
   }
 }
 
-export async function getDashboardProductWithPaginationService(page: number = 0, searchText: string = "") {
+export async function getDashboardProductWithPaginationService(page: number = 0, searchText: string = "",isSorted:boolean = false) {
   try {
     //const response = await
     console.log(searchText)
@@ -45,6 +45,13 @@ export async function getDashboardProductWithPaginationService(page: number = 0,
       return {
         ...response,
         hasMore: response.skip + response.limit < response.total
+      }
+    }
+    else if(isSorted){
+      const response = (await axios.get<PaginatedProduct>(`https://dummyjson.com/products?sortBy=title&order=asc&limit=9&skip=${page*10}`)).data
+      return {
+        ...response,
+        hasMore:response.skip + response.limit < response.total
       }
     }
     else {
@@ -76,14 +83,22 @@ export async function getSingleProduct(id: string) {
   }
 }
 
-export async function getProductBasedOnCategory(slug: string, page: number, searchText: string = "") {
+export async function getProductBasedOnCategory(slug: string, page: number, searchText: string = "",isSorted:boolean=false) {
   try {
     console.log(searchText)
-    if (searchText.length > 0) {
+
+    if (searchText.length > 0 && isSorted ==  false) {
       const response = (await axios.get<PaginatedProduct>(`https://dummyjson.com/products/search?q=${searchText}&limit=9&skip=${page * 10}`)).data
       return {
         ...response,
         hasMore: response.skip + response.limit < response.total
+      }
+    }
+    else if(isSorted){
+      const response = (await axios.get<PaginatedProduct>(`https://dummyjson.com/products/category/${slug}?sortBy=title&order=asc&limit=9&skip=${page*10}`)).data
+      return {
+        ...response,
+        hasMore:response.skip + response.limit < response.total
       }
     }
     else {
@@ -103,3 +118,15 @@ export async function getProductBasedOnCategory(slug: string, page: number, sear
   }
 }
 
+export async function getProductBySorting(){
+  try {
+    const response = (await axios.get<PaginatedProduct>("https://dummyjson.com/products?sortBy=title&order=asc")).data
+    return {
+      ...response,
+      hasMore:response.skip + response.limit < response.total
+    }
+  } catch (error) {
+    console.log("Error Fetching the Category Based Product",error)
+    throw error
+  }
+}
